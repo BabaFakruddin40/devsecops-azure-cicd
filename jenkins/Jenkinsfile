@@ -1,0 +1,119 @@
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY_LOGIN_SERVER = credentials('acr-login-server')
+        REGISTRY_USERNAME = credentials('acr-username')
+        REGISTRY_PASSWORD = credentials('acr-password')
+        GIT_COMMIT_SHORT = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+        IMAGE_TAG = "${BUILD_NUMBER}-${GIT_COMMIT_SHORT}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+                script {
+                    echo "Repository checked out successfully"
+                }
+            }
+        }
+
+        stage('Build Microservices') {
+            parallel {
+                stage('Build User Service') {
+                    steps {
+                        script {
+                            sh '''
+                                cd microservices/user-service
+                                docker build -t ${REGISTRY_LOGIN_SERVER}/user-service:${IMAGE_TAG} .
+                                docker build -t ${REGISTRY_LOGIN_SERVER}/user-service:latest .
+                            '''
+                        }
+                    }
+                }
+
+                stage('Build Order Service') {
+                    steps {
+                        script {
+                            sh '''
+                                cd microservices/order-service
+                                docker build -t ${REGISTRY_LOGIN_SERVER}/order-service:${IMAGE_TAG} .
+                                docker build -t ${REGISTRY_LOGIN_SERVER}/order-service:latest .
+                            '''
+                        }
+                    }
+                }
+
+                stage('Build Product Service') {
+                    steps {
+                        script {
+                            sh '''
+                                cd microservices/product-service
+                                docker build -t ${REGISTRY_LOGIN_SERVER}/product-service:${IMAGE_TAG} .
+                                docker build -t ${REGISTRY_LOGIN_SERVER}/product-service:latest .
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Push to ACR') {
+            steps {
+                script {
+                    sh '''
+                        docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_LOGIN_SERVER}
+                        docker push ${REGISTRY_LOGIN_SERVER}/user-service:${IMAGE_TAG}
+                        docker push ${REGISTRY_LOGIN_SERVER}/user-service:latest
+                        docker push ${REGISTRY_LOGIN_SERVER}/order-service:${IMAGE_TAG}
+                        docker push ${REGISTRY_LOGIN_SERVER}/order-service:latest
+                        docker push ${REGISTRY_LOGIN_SERVER}/product-service:${IMAGE_TAG}
+                        docker push ${REGISTRY_LOGIN_SERVER}/product-service:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Update K8s Manifests') {
+            steps {
+                script {
+                    sh '''
+                        # Update image tags in manifests
+                        sed -i "s|image:.*user-service.*|image: ${REGISTRY_LOGIN_SERVER}/user-service:${IMAGE_TAG}|g" k8s-manifests/user-service.yaml
+                        sed -i "s|image:.*order-service.*|image: ${REGISTRY_LOGIN_SERVER}/order-service:${IMAGE_TAG}|g" k8s-manifests/order-service.yaml
+                        sed -i "s|image:.*product-service.*|image: ${REGISTRY_LOGIN_SERVER}/product-service:${IMAGE_TAG}|g" k8s-manifests/product-service.yaml
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy via Argo CD') {
+            steps {
+                script {
+                    sh '''
+                        # Assuming Argo CD is already installed and configured
+                        # Commit and push updated manifests to trigger Argo CD sync
+                        git config user.email "jenkins@example.com"
+                        git config user.name "Jenkins Pipeline"
+                        git add k8s-manifests/
+                        git commit -m "Update images: Build ${BUILD_NUMBER}" || true
+                        git push origin HEAD:main
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo "Pipeline executed successfully!"
+        }
+        failure {
+            echo "Pipeline failed!"
+        }
+    }
+}
