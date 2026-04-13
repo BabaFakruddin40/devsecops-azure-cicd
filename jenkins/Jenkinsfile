@@ -70,7 +70,7 @@ pipeline {
                 // Use ssh-agent if pushing via SSH, or use Git credentials
                 sh """
                     git config user.email "baba.linux27@gmail.com"
-                    git config user.name "Jenkins Pipeline"
+                    git config user.name "BabaFakruddin40"
                     git add k8s-manifests/
                     git commit -m "Update images: Build ${env.BUILD_NUMBER}" || true
                     git push origin HEAD:main
