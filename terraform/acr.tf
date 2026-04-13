@@ -1,8 +1,8 @@
 # Azure Container Registry (ACR)
 resource "azurerm_container_registry" "acr" {
   name                = var.acr_name
-  resource_group_name = azurerm_resource_group.devsecops.name
-  location            = azurerm_resource_group.devsecops.location
+  resource_group_name = data.azurerm_resource_group.devsecops.name
+  location            = data.azurerm_resource_group.devsecops.location
   sku                 = "Standard"
   admin_enabled       = true
 

@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: <acr-name>.azurecr.io/order-service:latest
+          image: devsecopsacr28032026.azurecr.io/order-service:latest
           ports:
             - containerPort: 5000
               name: http

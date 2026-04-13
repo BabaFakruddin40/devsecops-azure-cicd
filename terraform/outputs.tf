@@ -14,6 +14,10 @@ output "acr_login_server" {
   description = "ACR login server"
 }
 
+output "resource_group_name" {
+  value = data.azurerm_resource_group.devsecops.name
+}
+
 output "jenkins_ip" {
   value       = azurerm_public_ip.jenkins_ip.ip_address
   description = "Jenkins public IP"

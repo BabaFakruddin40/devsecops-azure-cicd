@@ -2,29 +2,29 @@
 resource "azurerm_virtual_network" "vnet" {
   name                = "devsecops-vnet"
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.devsecops.location
-  resource_group_name = azurerm_resource_group.devsecops.name
+  location            = data.azurerm_resource_group.devsecops.location
+  resource_group_name = data.azurerm_resource_group.devsecops.name
 }
 
 resource "azurerm_subnet" "jenkins_subnet" {
   name                 = "jenkins-subnet"
-  resource_group_name  = azurerm_resource_group.devsecops.name
+  resource_group_name  = data.azurerm_resource_group.devsecops.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
 }
 
 resource "azurerm_public_ip" "jenkins_ip" {
   name                = "jenkins-pip"
-  location            = azurerm_resource_group.devsecops.location
-  resource_group_name = azurerm_resource_group.devsecops.name
+  location            = data.azurerm_resource_group.devsecops.location
+  resource_group_name = data.azurerm_resource_group.devsecops.name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
 resource "azurerm_network_interface" "jenkins_nic" {
   name                = "jenkins-nic"
-  location            = azurerm_resource_group.devsecops.location
-  resource_group_name = azurerm_resource_group.devsecops.name
+  location            = data.azurerm_resource_group.devsecops.location
+  resource_group_name = data.azurerm_resource_group.devsecops.name
 
   ip_configuration {
     name                          = "jenkins-ip-config"
@@ -36,8 +36,8 @@ resource "azurerm_network_interface" "jenkins_nic" {
 
 resource "azurerm_network_security_group" "jenkins_nsg" {
   name                = "jenkins-nsg"
-  location            = azurerm_resource_group.devsecops.location
-  resource_group_name = azurerm_resource_group.devsecops.name
+  location            = data.azurerm_resource_group.devsecops.location
+  resource_group_name = data.azurerm_resource_group.devsecops.name
 
   security_rule {
     name                       = "AllowHTTP"
@@ -71,8 +71,8 @@ resource "azurerm_network_interface_security_group_association" "jenkins_nsg_ass
 
 resource "azurerm_linux_virtual_machine" "jenkins" {
   name                = "jenkins-vm"
-  location            = azurerm_resource_group.devsecops.location
-  resource_group_name = azurerm_resource_group.devsecops.name
+  location            = data.azurerm_resource_group.devsecops.location
+  resource_group_name = data.azurerm_resource_group.devsecops.name
   size                = "Standard_B2s"
 
   admin_username = "azureuser"

@@ -1,9 +1,14 @@
 # Azure Kubernetes Service (AKS)
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = var.cluster_name
-  location            = azurerm_resource_group.devsecops.location
-  resource_group_name = azurerm_resource_group.devsecops.name
+  location            = data.azurerm_resource_group.devsecops.location
+  resource_group_name = data.azurerm_resource_group.devsecops.name
   dns_prefix          = var.cluster_name
+
+  oidc_issuer_enabled = true
+
+  # If you are using Workload Identity, it usually goes hand-in-hand:
+  workload_identity_enabled = true
 
   default_node_pool {
     name       = "default"
@@ -29,15 +34,15 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   depends_on = [
-    azurerm_resource_group.devsecops
+    data.azurerm_resource_group.devsecops
   ]
 }
 
 # Get AKS credentials
 resource "null_resource" "get_credentials" {
   provisioner "local-exec" {
-    command = "az aks get-credentials --resource-group ${azurerm_resource_group.devsecops.name} --name ${azurerm_kubernetes_cluster.aks.name} --overwrite-existing"
+    command = "az aks get-credentials --resource-group ${data.azurerm_resource_group.devsecops.name} --name ${azurerm_kubernetes_cluster.aks.name} --overwrite-existing"
   }
 
-  depends_on = [azurerm_kubernetes_cluster.aks]
+  depends_on = [data.azurerm_resource_group.devsecops]
 }

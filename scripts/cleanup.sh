@@ -11,7 +11,7 @@ kubectl delete application -n argocd --all || true
 kubectl delete namespace microservices argocd || true
 
 # Destroy Terraform infrastructure
-cd terraform
+cd ../terraform
 terraform destroy -auto-approve
 
 echo "Cleanup complete!"

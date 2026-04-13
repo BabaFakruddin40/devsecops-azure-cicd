@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/yourusername/devsecops-azure-cicd.git
+    repoURL: https://github.com/BabaFakruddin40/devsecops-azure-cicd.git
     targetRevision: main
     path: k8s-manifests
     kustomize:
@@ -17,7 +17,7 @@ spec:
           patch: |-
             - op: replace
               path: /spec/template/spec/containers/0/image
-              value: <acr-name>.azurecr.io/product-service:latest
+              value: devsecopsacr28032026.azurecr.io/product-service:latest
   destination:
     server: https://kubernetes.default.svc
     namespace: microservices

@@ -5,7 +5,7 @@ set -e
 echo "Starting DevSecOps deployment on Azure..."
 
 # Initialize Terraform
-cd terraform
+cd ../terraform
 terraform init
 terraform plan -out=tfplan
 terraform apply tfplan
@@ -19,7 +19,7 @@ az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
 
 # Install Argo CD
 kubectl create namespace argocd || true
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --server-side --force-conflicts
 
 echo "Waiting for Argo CD to be ready..."
 kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd

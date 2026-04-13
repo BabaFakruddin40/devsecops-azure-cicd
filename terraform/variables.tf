@@ -1,3 +1,14 @@
+variable "existing_rg_name" {
+  description = "Name of the existing resource group"
+  type        = string
+}
+
+variable "storage_account_name" {
+  description = "Must be globally unique, 3-24 characters, alphanumeric only"
+  type        = string
+}
+
+
 variable "location" {
   type        = string
   default     = "East US"
@@ -36,7 +47,7 @@ variable "vm_size" {
 
 variable "acr_name" {
   type        = string
-  default     = "devsecopsacr"
+  default     = "devsecopsacr28032026"
   description = "ACR name (must be globally unique)"
 }
 
