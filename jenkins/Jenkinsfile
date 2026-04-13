@@ -50,6 +50,10 @@ pipeline {
                         echo ${REGISTRY_PSW} | docker login ${REGISTRY_LOGIN_SERVER} -u ${REGISTRY_USR} --password-stdin
                         docker push ${REGISTRY_LOGIN_SERVER}/user-service:${IMAGE_TAG}
                         docker push ${REGISTRY_LOGIN_SERVER}/user-service:latest
+                        docker push ${REGISTRY_LOGIN_SERVER}/product-service:${IMAGE_TAG}
+                        docker push ${REGISTRY_LOGIN_SERVER}/product-service:latest
+                        docker push ${REGISTRY_LOGIN_SERVER}/order-service:${IMAGE_TAG}
+                        docker push ${REGISTRY_LOGIN_SERVER}/order-service:latest
                         # ... add other services ...
                     """
                 }
@@ -60,6 +64,8 @@ pipeline {
             steps {
                 sh """
                     sed -i "s|image:.*user-service.*|image: ${REGISTRY_LOGIN_SERVER}/user-service:${IMAGE_TAG}|g" k8s-manifests/user-service.yaml
+                    sed -i "s|image:.*product-service.*|image: ${REGISTRY_LOGIN_SERVER}/product-service:${IMAGE_TAG}|g" k8s-manifests/user-service.yaml
+                    sed -i "s|image:.*order-service.*|image: ${REGISTRY_LOGIN_SERVER}/order-service:${IMAGE_TAG}|g" k8s-manifests/user-service.yaml
                     # ... add other services ...
                 """
             }
