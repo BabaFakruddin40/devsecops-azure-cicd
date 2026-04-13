@@ -66,6 +66,10 @@ pipeline {
         }
 
         stage('Deploy via Argo CD') {
+            environment {
+        // This pulls your token from Jenkins credentials
+        GITHUB_TOKEN = credentials('github-token')
+    }
             steps {
                 // Use ssh-agent if pushing via SSH, or use Git credentials
                 sh """
