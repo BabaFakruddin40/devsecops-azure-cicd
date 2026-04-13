@@ -92,22 +92,33 @@ pipeline {
         }
 
         stage('Deploy via Argo CD') {
-            environment {
-        // This pulls your token from Jenkins credentials
-        GITHUB_TOKEN = credentials('github-token')
-    }
-            steps {
-                // Use ssh-agent if pushing via SSH, or use Git credentials
+    steps {
+        // This helper handles the authentication flow for you
+        withCredentials([usernamePassword(credentialsId: 'github-creds', 
+                         passwordVariable: 'GITHUB_PSW', 
+                         usernameVariable: 'GITHUB_USR')]) {
+            script {
                 sh """
                     git config user.email "baba.linux27@gmail.com"
                     git config user.name "BabaFakruddin40"
                     git add k8s-manifests/
-                    git commit -m "Update images: Build ${env.BUILD_NUMBER}" || true
-                    git push origin HEAD:main
+                    
+                    # Only commit if there are changes to avoid empty commit errors
+                    if ! git diff-index --quiet HEAD --; then
+                        git commit -m "Update images: Build ${env.BUILD_NUMBER}"
+                        
+                        # Inject the credentials into the URL for this specific push
+                        git push https://${GITHUB_USR}:${GITHUB_PSW}@github.com/BabaFakruddin40/devsecops-azure-cicd.git HEAD:main
+                    else
+                        echo "No changes in manifests. Skipping push."
+                    fi
                 """
             }
         }
     }
+}
+
+
 
     post {
         always { cleanWs() }
