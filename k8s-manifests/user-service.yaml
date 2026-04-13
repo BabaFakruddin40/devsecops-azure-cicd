@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: devsecopsacr28032026.azurecr.io/user-service:13-ff19928
+          image: devsecopsacr28032026.azurecr.io/user-service:14-d67a5ed
           ports:
             - containerPort: 5000
               name: http
