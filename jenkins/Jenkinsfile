@@ -91,33 +91,26 @@ pipeline {
             }
         }
 
-        stage('Deploy via Argo CD') {
+    stage('Deploy via Argo CD') {
     steps {
-        // This helper handles the authentication flow for you
-        withCredentials([usernamePassword(credentialsId: 'github-creds', 
-                         passwordVariable: 'GITHUB_PSW', 
-                         usernameVariable: 'GITHUB_USR')]) {
-            script {
-                sh """
-                    git config user.email "baba.linux27@gmail.com"
-                    git config user.name "BabaFakruddin40"
-                    git add k8s-manifests/
-                    
-                    # Only commit if there are changes to avoid empty commit errors
-                    if ! git diff-index --quiet HEAD --; then
-                        git commit -m "Update images: Build ${env.BUILD_NUMBER}"
-                        
-                        # Inject the credentials into the URL for this specific push
-                        git push https://${GITHUB_USR}:${GITHUB_PSW}@github.com/BabaFakruddin40/devsecops-azure-cicd.git HEAD:main
-                    else
-                        echo "No changes in manifests. Skipping push."
-                    fi
-                """
-            }
+        // Requires the 'SSH Agent' plugin
+        sshagent(['github-ssh-key']) {
+            sh """
+                git config user.email "jenkins@example.com"
+                git config user.name "Jenkins Pipeline"
+                
+                # Ensure the remote is set to SSH, not HTTPS
+                git remote set-url origin git@github.com:BabaFakruddin40/devsecops-azure-cicd.git
+                
+                git add k8s-manifests/
+                git commit -m "Update images: Build ${env.BUILD_NUMBER}" || true
+                
+                # SSH Agent automatically handles the key handshake
+                git push origin HEAD:main
+            """
         }
     }
 }
-    }
 
     post {
         always { cleanWs() }
