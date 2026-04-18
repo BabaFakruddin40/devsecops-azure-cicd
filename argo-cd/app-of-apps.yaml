@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/BabaFakruddin40/devsecops-azure-cicd.git
-    targetRevision: main
-    path: argo-cd/apps
+    repoURL: https://github.com/BabaFakruddin40/Argocd-project.git
+    targetRevision: HEAD
+    path: K8s
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
