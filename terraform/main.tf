@@ -33,17 +33,17 @@ data "azurerm_resource_group" "devsecops" {
 # --- RESOURCES ---
 
 # Create the Storage Account using the 'existing' RG data source
-resource "azurerm_storage_account" "storage" {
-  name                     = var.storage_account_name
-  resource_group_name      = data.azurerm_resource_group.existing.name
-  location                 = data.azurerm_resource_group.existing.location
+#resource "azurerm_storage_account" "storage" {
+# name                     = var.storage_account_name
+# resource_group_name      = data.azurerm_resource_group.existing.name
+#  location                 = data.azurerm_resource_group.existing.location
   
-  account_tier             = "Standard"
-  account_replication_type = "LRS" 
+# account_tier             = "Standard"
+#  account_replication_type = "LRS" 
 
-  tags = {
-    environment = "dev"
-    Project     = "DevSecOps"
-  }
-}
+#  tags = {
+#   environment = "dev"
+#    Project     = "DevSecOps"
+#  }
+#}
 

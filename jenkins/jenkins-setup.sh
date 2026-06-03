@@ -20,7 +20,7 @@ sudo apt-get update
 sudo apt-get upgrade -y
 
 # Install Java
-sudo apt-get install -y openjdk-17-jre
+sudo apt-get install -y openjdk-20-jdk
 
 # Add Jenkins repository
 sudo wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo apt-key add -
@@ -45,7 +45,8 @@ curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 # Start Jenkins
 sudo systemctl start jenkins
 sudo systemctl enable jenkins
-sudo systemctl start dockersudo systemctl daemon-reload
+sudo systemctl start docker
+sudo systemctl daemon-reload
 sudo systemctl enable docker
 
 echo "Jenkins installation complete!"

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skills-tracker-deployment
+  labels:
+    app: skills-tracker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: skills-tracker
+  template:
+    metadata:
+      labels:
+        app: skills-tracker
+    spec:
+      containers:
+      - name: skills-tracker
+        image: <ACR_LOGIN_SERVER>/skills-tracker:latest
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_ENV
+          value: "production"
+        volumeMounts:
+        - name: skills-db
+          mountPath: /app/skills.db
+          subPath: skills.db
+      volumes:
+      - name: skills-db
+        emptyDir: {}

@@ -1,0 +1,59 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Skills App Overview",
+    "tags": ["skills-app", "overview"],
+    "timezone": "browser",
+    "schemaVersion": 30,
+    "version": 1,
+    "panels": [
+      {
+        "type": "graph",
+        "title": "HTTP Requests",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total[1m]))",
+            "legendFormat": "Total Requests"
+          }
+        ],
+        "datasource": "Prometheus",
+        "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8}
+      },
+      {
+        "type": "graph",
+        "title": "CPU Usage",
+        "targets": [
+          {
+            "expr": "sum(rate(container_cpu_usage_seconds_total{pod=~\"skills-tracker.*\"}[1m]))",
+            "legendFormat": "CPU Usage"
+          }
+        ],
+        "datasource": "Prometheus",
+        "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8}
+      },
+      {
+        "type": "graph",
+        "title": "Memory Usage",
+        "targets": [
+          {
+            "expr": "sum(container_memory_usage_bytes{pod=~\"skills-tracker.*\"})",
+            "legendFormat": "Memory Usage"
+          }
+        ],
+        "datasource": "Prometheus",
+        "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8}
+      },
+      {
+        "type": "logs",
+        "title": "Skills App Logs",
+        "targets": [
+          {
+            "expr": "{app=\"skills-tracker\"}",
+            "datasource": "Loki"
+          }
+        ],
+        "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8}
+      }
+    ]
+  }
+}

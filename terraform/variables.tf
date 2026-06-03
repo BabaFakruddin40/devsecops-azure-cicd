@@ -47,7 +47,7 @@ variable "vm_size" {
 
 variable "acr_name" {
   type        = string
-  default     = "devsecopsacr28032026"
+  default     = "devsecops30052026acr"
   description = "ACR name (must be globally unique)"
 }
 

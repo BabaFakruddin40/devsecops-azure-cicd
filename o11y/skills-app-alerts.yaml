@@ -1,0 +1,35 @@
+groups:
+- name: skills-app-alerts
+  rules:
+  - alert: SkillsAppDown
+    expr: absent(up{job="kubernetes", instance=~"skills-tracker-service.*"})
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Skills App is down"
+      description: "No running instance of the skills app has been detected for more than 2 minutes."
+  - alert: HighErrorRate
+    expr: sum(rate(http_requests_total{status=~"5.."}[5m])) by (job) > 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High error rate detected"
+      description: "More than 1 HTTP 5xx error per second for 5 minutes."
+  - alert: HighCPUUsage
+    expr: sum(rate(container_cpu_usage_seconds_total{pod=~"skills-tracker.*"}[5m])) > 0.5
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage"
+      description: "CPU usage for skills app pods is above 0.5 cores for 5 minutes."
+  - alert: HighMemoryUsage
+    expr: sum(container_memory_usage_bytes{pod=~"skills-tracker.*"}) > 500000000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage"
+      description: "Memory usage for skills app pods is above 500MB for 5 minutes."
